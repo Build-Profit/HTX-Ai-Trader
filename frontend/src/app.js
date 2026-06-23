@@ -1,6 +1,7 @@
 import { checkHealth, runDemo } from "./api.js";
 import { drawEquityChart } from "./charts.js";
 import { presets } from "./demo.js";
+import { sampleResult } from "./sample-result.js";
 import { formatNumber, formatPercent, setStatus, shortHash } from "./ui-state.js";
 
 const elements = {
@@ -39,7 +40,10 @@ const elements = {
 let latestResult = null;
 
 bindEvents();
-drawEquityChart(elements.equityChart, []);
+renderResult(sampleResult);
+setStatus(elements.runState, "sample", "warn");
+setStatus(elements.dataSource, "local_sample_preview", "warn");
+queueInitialRefresh();
 
 function bindEvents() {
   elements.healthButton.addEventListener("click", handleHealthCheck);
@@ -94,6 +98,16 @@ async function handleRunDemo() {
   } finally {
     elements.runButton.disabled = false;
   }
+}
+
+function queueInitialRefresh() {
+  window.setTimeout(async () => {
+    try {
+      await handleRunDemo();
+    } catch {
+      setStatus(elements.healthStatus, "offline", "danger");
+    }
+  }, 250);
 }
 
 function renderResult(result) {
@@ -178,7 +192,7 @@ function sourceTone(source) {
   if (source === "htx_live") {
     return "ok";
   }
-  if (source === "local_sample") {
+  if (source === "local_sample" || source === "local_sample_preview") {
     return "warn";
   }
   return "neutral";
