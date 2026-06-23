@@ -62,7 +62,7 @@ Current MVP:
 
 - HTX-compatible market K-line adapter.
 - BTC/USDT and ETH/USDT trading pairs.
-- Local fallback for demo stability.
+- Last-successful HTX snapshot and local fallback for demo stability.
 - Simulated HTX execution workflow.
 
 Future:

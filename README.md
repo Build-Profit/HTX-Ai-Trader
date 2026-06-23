@@ -131,7 +131,8 @@ MVP requirements:
 - Support BTC/USDT and ETH/USDT.
 - Support historical K-line data for backtesting.
 - Support realtime or near-realtime price display.
-- Use a local historical data fallback when the external API is unavailable.
+- Use a last-successful HTX-compatible K-line snapshot when the live API is unavailable.
+- Use bundled local sample data only when no live or cached snapshot exists.
 - Clearly label the data source in the UI.
 
 ### 3. Backtesting Engine
@@ -311,7 +312,7 @@ Web3:
 ### P0: Required for Demo
 
 - Functional ProfitPrince frontend prototype.
-- HTX market data adapter or local K-line fallback.
+- HTX market data adapter with cached snapshot and local K-line fallback.
 - Natural-language strategy parser.
 - Basic backtesting engine.
 - AI risk explanation.

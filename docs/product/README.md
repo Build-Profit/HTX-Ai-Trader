@@ -21,7 +21,7 @@ ProfitPrince is an HTX-native AI trading strategy agent. The MVP should prove on
 ```text
 Natural-language strategy idea
 -> structured strategy JSON
--> HTX market data / local fallback
+-> HTX market data / cached snapshot / local fallback
 -> reproducible backtest
 -> AI risk explanation
 -> simulated execution ledger

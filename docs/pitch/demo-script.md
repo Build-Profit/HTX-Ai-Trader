@@ -73,7 +73,7 @@ Point to:
 
 Explain:
 
-"The metrics are calculated from K-line data. The demo can use HTX live data, but falls back to local samples so the roadshow does not depend on network availability."
+"The metrics are calculated from K-line data. The demo uses HTX live data when available, falls back to the latest successful HTX-compatible snapshot if the live API is unavailable, and only uses bundled local samples when no cached snapshot exists."
 
 ### 2:20-3:00 AI Risk
 

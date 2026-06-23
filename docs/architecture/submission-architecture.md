@@ -71,7 +71,9 @@ Responsibilities:
 
 - Request HTX-compatible K-line endpoints.
 - Normalize market data into `Kline`.
-- Fall back to local sample data if live data is unavailable.
+- Persist successful live pulls into `backend/app/data/cache/`.
+- Fall back to the latest cached snapshot if live data is unavailable.
+- Fall back to bundled local sample data if no cached snapshot exists.
 - Label data source.
 
 ### Backtest Engine
@@ -132,9 +134,10 @@ User prompt
 
 ## Demo Stability
 
-The MVP has two fallback layers:
+The MVP has three fallback layers:
 
-- Backend market fallback: live HTX data falls back to local samples.
+- Backend market fallback: live HTX data falls back to the latest cached HTX snapshot.
+- Bundled sample fallback: if no cached snapshot exists, the backend uses committed local samples.
 - Frontend preview fallback: page load shows sample result before API refresh.
 
 This keeps the demo usable even when external network access is unreliable.

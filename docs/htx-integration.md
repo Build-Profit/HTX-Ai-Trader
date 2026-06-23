@@ -9,7 +9,8 @@ Implemented:
 - HTX-compatible K-line adapter.
 - BTC/USDT and ETH/USDT strategy symbols.
 - HTX market data source label.
-- Local sample fallback for demo stability.
+- Last-successful HTX snapshot fallback for demo stability.
+- Bundled local sample fallback when no live or cached data exists.
 - Simulated HTX order lifecycle.
 
 The MVP does not place real HTX orders.
@@ -28,13 +29,18 @@ Behavior:
 2. Convert timeframe into HTX-compatible periods such as `60min`.
 3. Request K-line data from HTX/Huobi-compatible endpoints.
 4. Normalize response fields into the shared `Kline` model.
-5. Fall back to local sample data when the live endpoint is unavailable.
+5. Persist each successful live response into `backend/app/data/cache/` as the latest valid HTX-compatible snapshot.
+6. If the live endpoint is unavailable, fall back to the latest cached snapshot.
+7. If no cached snapshot exists, fall back to bundled local sample data in `backend/app/data/sample_klines/`.
 
 Data source labels:
 
 - `htx_live`
+- `htx_cached`
 - `local_sample`
 - `local_sample_preview`
+
+The cache directory is runtime state and is intentionally gitignored. The committed `sample_klines/` files remain stable demo fixtures and are not overwritten by live market pulls.
 
 ## Simulated Execution Boundary
 

@@ -13,7 +13,7 @@ As of 2026-06-23, the repository contains a runnable MVP path:
 ```text
 Natural-language strategy idea
 -> deterministic strategy JSON
--> HTX K-line request with local fallback
+-> HTX K-line request with cached snapshot and local fallback
 -> deterministic backtest
 -> rule-based risk explanation
 -> simulated execution ledger
@@ -27,7 +27,7 @@ Implemented:
 - FastAPI backend routes for strategy, market, backtest, risk, trade, proof, and demo.
 - Dataclass-based domain models for strategy, market, backtest, trade, and proof.
 - Template parser for the MVP dip-buy strategy.
-- HTX market adapter with local BTC/USDT and ETH/USDT 1h sample fallback.
+- HTX market adapter with last-successful snapshot cache and local BTC/USDT and ETH/USDT 1h sample fallback.
 - Deterministic backtest engine with fees, position sizing, take-profit, stop-loss, equity curve, and buy-and-hold comparison.
 - Rule-based risk explainer grounded in backtest metrics.
 - Simulated execution logs with no real exchange orders.
@@ -94,7 +94,7 @@ Build a credible HTX-native AI strategy workflow:
 ```text
 Natural-language strategy idea
 -> strategy JSON
--> HTX K-line data or local fallback
+-> HTX K-line data, cached snapshot, or local fallback
 -> deterministic backtest
 -> AI risk explanation
 -> simulated execution ledger
@@ -266,11 +266,12 @@ Implemented:
 
 - `get_klines(symbol, timeframe, limit)`.
 - HTX API adapter.
-- Local sample-data fallback.
+- Last-successful HTX snapshot cache in `backend/app/data/cache/`.
+- Local sample-data fallback in `backend/app/data/sample_klines/`.
 - Data normalization into one `Kline` model.
-- Source label: `htx_live` or `local_sample`.
+- Source label: `htx_live`, `htx_cached`, or `local_sample`.
 
-`htx_cached` remains a future source label if a cache layer is added.
+The cache is runtime state and must not overwrite committed `sample_klines/` fixtures.
 
 ### 6.5 Backtest Engine
 
@@ -389,14 +390,14 @@ Status: complete.
 
 1. Create FastAPI app.
 2. Add `/api/strategy/parse`.
-3. Add `/api/market/klines` with local fallback.
+3. Add `/api/market/klines` with cached snapshot and local fallback.
 4. Add `/api/backtest/run`.
 5. Add `/api/proof/hash`.
 
 Acceptance:
 
 - One strategy can be parsed.
-- One local sample can be backtested.
+- One live, cached, or local sample can be backtested.
 - Proof hashes are deterministic.
 - Tests pass for parser, backtest, and hash.
 
@@ -475,7 +476,7 @@ Status: in progress.
 
 | Risk | Mitigation |
 | --- | --- |
-| Live HTX API fails during demo | Local sample fallback and Demo Mode |
+| Live HTX API fails during demo | Last-successful HTX snapshot, local sample fallback, and Demo Mode |
 | UI looks good but behavior is fake | Replace hardcoded metrics with backend results |
 | Backtest results are questioned | Deterministic engine, visible fee assumptions, sample data |
 | AI output becomes unsafe marketing | Use structured risk explainer and compliance wording |

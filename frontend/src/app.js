@@ -192,7 +192,7 @@ function sourceTone(source) {
   if (source === "htx_live") {
     return "ok";
   }
-  if (source === "local_sample" || source === "local_sample_preview") {
+  if (source === "htx_cached" || source === "local_sample" || source === "local_sample_preview") {
     return "warn";
   }
   return "neutral";

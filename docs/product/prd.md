@@ -62,7 +62,7 @@ The MVP proves one vertical slice:
 ```text
 Natural-language strategy idea
 -> structured strategy JSON
--> HTX market data request with local fallback
+-> HTX market data request with cached snapshot and local fallback
 -> deterministic backtest
 -> AI/rule-based risk explanation
 -> simulated execution ledger
@@ -91,7 +91,7 @@ Supported demo timeframe:
 1. User opens the ProfitPrince console.
 2. User enters a natural-language strategy idea.
 3. System parses the text into strategy JSON.
-4. System loads HTX K-line data or local fallback sample data.
+4. System loads HTX K-line data, the last successful HTX snapshot, or local fallback sample data.
 5. System runs deterministic backtest.
 6. System displays total return, buy-and-hold return, win rate, max drawdown, trade count, and equity curve.
 7. System explains key risks and parameter suggestions.
@@ -109,7 +109,9 @@ Supported demo timeframe:
 ### Market Data
 
 - Try live HTX-compatible K-line endpoints first.
-- Fall back to local sample data if live data is unavailable.
+- Save each successful live pull as the latest local HTX-compatible snapshot.
+- Fall back to the cached snapshot if live data is unavailable.
+- Fall back to bundled local sample data if no cached snapshot exists.
 - Label the data source in the UI.
 
 ### Backtest

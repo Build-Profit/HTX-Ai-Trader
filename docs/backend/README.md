@@ -9,7 +9,7 @@ This folder is for API contracts, service layout, and backend integration notes.
 | Method | Endpoint | Purpose |
 | --- | --- | --- |
 | `POST` | `/api/strategy/parse` | Natural language to strategy JSON |
-| `GET` | `/api/market/klines` | HTX or fallback K-line data |
+| `GET` | `/api/market/klines` | HTX live, cached snapshot, or fallback K-line data |
 | `POST` | `/api/backtest/run` | Deterministic strategy backtest |
 | `POST` | `/api/risk/explain` | Risk report and improvement suggestions |
 | `POST` | `/api/trade/simulate` | Mock execution lifecycle |
