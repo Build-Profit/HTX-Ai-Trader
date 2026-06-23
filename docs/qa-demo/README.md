@@ -17,10 +17,43 @@ Demo Mode must run without external dependency risk:
 
 ## Acceptance Checklist
 
-- Natural-language input produces strategy JSON.
-- Backtest changes when parameters change.
-- Metrics are not fixed display numbers.
-- UI labels data source clearly.
-- Simulated orders are linked to strategy version.
-- Proof hash changes when strategy or result changes.
-- No guaranteed-profit wording appears in the final demo.
+- [x] Natural-language input produces strategy JSON.
+- [x] Backtest changes when parameters change.
+- [x] Metrics are not fixed display numbers.
+- [x] UI labels data source clearly.
+- [x] Simulated orders are linked to strategy version.
+- [x] Proof hash changes when strategy or result changes.
+- [x] No guaranteed-profit wording appears in the final demo.
+
+## Verified Commands
+
+Backend tests:
+
+```bash
+cd backend
+python3 -m pytest
+```
+
+Frontend syntax:
+
+```bash
+node --check frontend/src/app.js
+node --check frontend/src/api.js
+node --check frontend/src/charts.js
+node --check frontend/src/demo.js
+node --check frontend/src/ui-state.js
+```
+
+Full local demo:
+
+```bash
+cd backend
+python3 -m uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
+```
+
+```bash
+cd frontend
+python3 -m http.server 5173
+```
+
+Open `http://127.0.0.1:5173`.

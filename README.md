@@ -403,6 +403,44 @@ Recommended public wording:
 
 ---
 
+## Local Run
+
+Install backend dependencies:
+
+```bash
+cd backend
+python3 -m pip install -e '.[dev]'
+```
+
+Run backend tests:
+
+```bash
+python3 -m pytest
+```
+
+Start the API:
+
+```bash
+python3 -m uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
+```
+
+Start the frontend from another terminal:
+
+```bash
+cd frontend
+python3 -m http.server 5173
+```
+
+Open:
+
+```text
+http://127.0.0.1:5173
+```
+
+The frontend defaults to `http://127.0.0.1:8000` for the API.
+
+---
+
 ## 3-5 Minute Pitch Script
 
 | Time | Section | Message |
@@ -419,10 +457,10 @@ Recommended public wording:
 ## Submission Checklist
 
 - [ ] GitHub repository with source code.
-- [ ] Runnable frontend demo.
-- [ ] Backend API service.
-- [ ] Demo Mode with stable sample strategy and market data.
-- [ ] README and deployment instructions.
+- [x] Runnable frontend demo.
+- [x] Backend API service.
+- [x] Demo Mode with stable sample strategy and market data.
+- [x] README and deployment instructions.
 - [ ] Demo video.
 - [ ] Pitch deck within 15 pages.
 - [ ] PRD / project documentation.

@@ -1,9 +1,46 @@
 # HTX-Ai-Trader MVP Implementation Plan
 
-Status: Waiting for owner approval  
-Owner for approval: Wang Mia  
-Date: 2026-06-18  
-Scope: Planning and repository documentation only. No implementation starts until approval.
+Status: MVP vertical slice implemented and under demo hardening  
+Owner: Wang Mia  
+Created: 2026-06-18  
+Last updated: 2026-06-23  
+Scope: Backend vertical slice, static frontend console, local demo artifacts, and verification commands.
+
+## Current Implementation Snapshot
+
+As of 2026-06-23, the repository contains a runnable MVP path:
+
+```text
+Natural-language strategy idea
+-> deterministic strategy JSON
+-> HTX K-line request with local fallback
+-> deterministic backtest
+-> rule-based risk explanation
+-> simulated execution ledger
+-> proof hash
+-> static dashboard display
+-> run artifacts
+```
+
+Implemented:
+
+- FastAPI backend routes for strategy, market, backtest, risk, trade, proof, and demo.
+- Dataclass-based domain models for strategy, market, backtest, trade, and proof.
+- Template parser for the MVP dip-buy strategy.
+- HTX market adapter with local BTC/USDT and ETH/USDT 1h sample fallback.
+- Deterministic backtest engine with fees, position sizing, take-profit, stop-loss, equity curve, and buy-and-hold comparison.
+- Rule-based risk explainer grounded in backtest metrics.
+- Simulated execution logs with no real exchange orders.
+- SHA-256 proof hashes for strategy, backtest, execution log, and combined record.
+- Static frontend console in `frontend/` wired to `/api/demo/run`.
+- Tests for parser, backtest, simulator, proof hasher, and demo runner.
+
+Remaining:
+
+- Harden frontend layout against more browser and viewport combinations.
+- Add API integration tests for FastAPI routes.
+- Add explicit run instructions to the top-level README.
+- Decide whether run artifacts should remain local-only or be captured as demo evidence.
 
 ## 1. Inputs Used
 
@@ -85,9 +122,9 @@ The product must not claim guaranteed returns, risk-free profit, or unverifiable
 - Report metrics in a format both traders and judges can understand.
 - Put walk-forward validation and Monte Carlo stress tests into later phases.
 
-## 5. Repository Structure to Build
+## 5. Repository Structure
 
-After approval, implement this structure:
+Implemented structure:
 
 ```text
 HTX-Ai-Trader/
@@ -104,6 +141,7 @@ HTX-Ai-Trader/
 │   ├── qa-demo/
 │   └── pitch/
 ├── frontend/
+│   ├── package.json
 │   ├── index.html
 │   ├── src/
 │   │   ├── app.js
@@ -156,16 +194,17 @@ HTX-Ai-Trader/
 
 Primary owner: Frontend Lead
 
-What to write:
+Implemented:
 
-- Extract the existing static terminal UI into `frontend/`.
-- Fix malformed HTML conversion issues from the docx export.
-- Replace hardcoded metrics with API state.
-- Add Demo Mode button.
-- Add strategy JSON viewer.
-- Add backtest and benchmark panels.
-- Add simulated order ledger.
-- Add proof hash panel.
+- Static console in `frontend/index.html`.
+- API client in `frontend/src/api.js`.
+- One-click demo run against `/api/demo/run`.
+- Strategy prompt presets.
+- Strategy JSON viewer.
+- Backtest metric tiles and canvas equity curve.
+- AI risk panel.
+- Simulated order table.
+- Proof hash panel.
 
 Keep:
 
@@ -184,13 +223,14 @@ Remove or revise:
 
 Primary owner: Backend / Infra Lead
 
-What to write:
+Implemented:
 
 - FastAPI application skeleton.
-- Pydantic request and response models.
 - API routes for strategy, market, backtest, risk, trade, proof, and demo.
-- Unified error responses.
+- Thin route modules with service-owned behavior.
 - Local run artifact writer.
+
+Current model implementation uses dataclasses rather than Pydantic response models. This is acceptable for the MVP, but P1 should add stricter API request and response schemas if the API becomes a public contract.
 
 Backend rule:
 
@@ -202,7 +242,7 @@ routes call services; services own behavior
 
 Primary owner: Backend Lead + Strategy Lead
 
-What to write:
+Implemented:
 
 - Template-based parser for MVP.
 - Rule extraction for:
@@ -222,19 +262,21 @@ MVP does not require paid LLM integration. A deterministic parser is acceptable 
 
 Primary owner: Backend / Infra Lead
 
-What to write:
+Implemented:
 
 - `get_klines(symbol, timeframe, limit)`.
 - HTX API adapter.
 - Local sample-data fallback.
 - Data normalization into one `Kline` model.
-- Source label: `htx_live`, `htx_cached`, or `local_sample`.
+- Source label: `htx_live` or `local_sample`.
+
+`htx_cached` remains a future source label if a cache layer is added.
 
 ### 6.5 Backtest Engine
 
 Primary owner: Trading Engine Lead
 
-What to write:
+Implemented:
 
 - Dip-buy strategy executor.
 - Fee model.
@@ -258,7 +300,7 @@ The backtest engine must be deterministic and testable without network access.
 
 Primary owner: Strategy / QA Lead + Backend Lead
 
-What to write:
+Implemented:
 
 - Rule-based risk summary first.
 - Optional LLM-generated language later.
@@ -276,7 +318,7 @@ AI explanation must be grounded in backtest metrics.
 
 Primary owner: Trading Engine Lead
 
-What to write:
+Implemented:
 
 - Mock order creation.
 - Mock fill.
@@ -284,7 +326,7 @@ What to write:
 - Take-profit trigger.
 - Stop-loss trigger.
 - Manual stop.
-- JSONL execution log.
+- JSON execution log.
 
 No real funds, no real exchange orders in MVP.
 
@@ -292,7 +334,7 @@ No real funds, no real exchange orders in MVP.
 
 Primary owner: Web3 / Proof Lead
 
-What to write:
+Implemented:
 
 - Canonical JSON serializer.
 - SHA-256 hash for:
@@ -308,7 +350,7 @@ P1 can add a testnet contract. MVP only needs local proof records.
 
 Primary owner: Backend / Infra Lead
 
-What to write:
+Implemented:
 
 Every full demo run should produce:
 
@@ -319,7 +361,7 @@ runs/<run_id>/
 ├── market_meta.json
 ├── backtest_v1.json
 ├── risk_report_v1.json
-├── simulated_orders.jsonl
+├── simulated_orders.json
 └── proof.json
 ```
 
@@ -341,6 +383,8 @@ Acceptance:
 - No secrets committed.
 - README and docs remain intact.
 
+Status: complete.
+
 ### Phase 1: Backend Vertical Slice
 
 1. Create FastAPI app.
@@ -356,6 +400,8 @@ Acceptance:
 - Proof hashes are deterministic.
 - Tests pass for parser, backtest, and hash.
 
+Status: complete.
+
 ### Phase 2: Frontend Connection
 
 1. Wire strategy input to `/api/strategy/parse`.
@@ -369,6 +415,8 @@ Acceptance:
 - User can enter one strategy and see real backend results.
 - UI still works in Demo Mode.
 - No fixed win-rate claims remain in main flow.
+
+Status: complete for the one-click demo path. Direct multi-endpoint frontend orchestration remains optional.
 
 ### Phase 3: Risk and Simulation
 
@@ -384,6 +432,8 @@ Acceptance:
 - Execution remains simulated.
 - Proof hash changes if strategy/backtest/log changes.
 
+Status: complete for MVP.
+
 ### Phase 4: Demo Hardening
 
 1. Add `/api/demo/run`.
@@ -398,6 +448,8 @@ Acceptance:
 - Demo works without live HTX API.
 - Data source is clearly labeled.
 - Judge-facing story is consistent with README.
+
+Status: in progress.
 
 ### Phase 5: P1 Enhancements Only After MVP
 
@@ -430,25 +482,43 @@ Acceptance:
 | Scope expands too much | Finish one vertical slice before adding templates |
 | Team overwrites each other's work | Use docs ownership, branches, and small commits |
 
-## 10. Approval Gate
+## 10. Verification
 
-No implementation code should be written until this plan is approved.
+Backend dependency install:
 
-Pending approval question:
-
-```text
-Approve Phase 0 and Phase 1 implementation?
+```bash
+cd backend
+python3 -m pip install -e '.[dev]'
 ```
 
-If approved, the first coding task will be:
+Backend tests:
+
+```bash
+cd backend
+python3 -m pytest
+```
+
+API server:
+
+```bash
+cd backend
+python3 -m uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
+```
+
+Frontend server:
+
+```bash
+cd frontend
+python3 -m http.server 5173
+```
+
+Open:
 
 ```text
-Create backend FastAPI skeleton, shared models, local sample K-line loader, strategy parser, deterministic dip-buy backtest, proof hasher, and tests.
+http://127.0.0.1:5173
 ```
 
 ## 11. Todo State
-
-`todo_write` is not available in the current tool environment. The active task state is therefore tracked through the assistant task plan and this approval-gated document.
 
 Current state:
 
@@ -456,4 +526,10 @@ Current state:
 - [x] Study reference projects.
 - [x] Create documentation directory structure.
 - [x] Write implementation plan.
-- [ ] Wait for owner approval before coding.
+- [x] Implement backend FastAPI skeleton and service vertical slice.
+- [x] Implement static frontend console.
+- [x] Install backend dependencies.
+- [x] Verify tests with `python3 -m pytest`.
+- [ ] Add FastAPI route-level tests.
+- [ ] Add README run instructions.
+- [ ] Push committed implementation to the Build-Profit remote.
