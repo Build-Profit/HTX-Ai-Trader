@@ -532,4 +532,4 @@ Current state:
 - [x] Verify tests with `python3 -m pytest`.
 - [x] Add FastAPI route-level tests.
 - [x] Add README run instructions.
-- [ ] Push committed implementation to the Build-Profit remote.
+- [x] Push committed implementation to the Build-Profit remote.
