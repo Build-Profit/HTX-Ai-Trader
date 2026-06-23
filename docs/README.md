@@ -18,6 +18,7 @@ The repository is organized so each member can find the documents that match the
 | `web3/` | Web3 / Proof Lead | Hash proof, version records, testnet contract plan, future ZK notes |
 | `qa-demo/` | QA / Demo Lead | Test cases, demo mode, sample data, acceptance checklist |
 | `pitch/` | Pitch Lead | Roadshow script, deck outline, judge-facing story |
+| `htx-integration.md` | Backend / Product Lead | HTX market data, simulated execution boundary, future API path |
 
 ## Rules
 

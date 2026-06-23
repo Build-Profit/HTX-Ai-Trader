@@ -456,17 +456,17 @@ The frontend defaults to `http://127.0.0.1:8000` for the API.
 
 ## Submission Checklist
 
-- [ ] GitHub repository with source code.
+- [x] GitHub repository with source code.
 - [x] Runnable frontend demo.
 - [x] Backend API service.
 - [x] Demo Mode with stable sample strategy and market data.
 - [x] README and deployment instructions.
 - [ ] Demo video.
 - [ ] Pitch deck within 15 pages.
-- [ ] PRD / project documentation.
-- [ ] Clear HTX integration explanation.
-- [ ] Clear AI and Web3 contribution explanation.
-- [ ] Compliance-safe wording with no guaranteed-return claims.
+- [x] PRD / project documentation.
+- [x] Clear HTX integration explanation.
+- [x] Clear AI and Web3 contribution explanation.
+- [x] Compliance-safe wording with no guaranteed-return claims.
 
 ---
 

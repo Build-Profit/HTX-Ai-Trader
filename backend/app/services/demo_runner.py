@@ -49,7 +49,7 @@ def run_demo(strategy_text: str) -> Dict[str, object]:
 
 def _write_run_artifacts(result: Dict[str, object]) -> None:
     RUNS_DIR.mkdir(parents=True, exist_ok=True)
-    run_id = datetime.now(timezone.utc).strftime("run_%Y%m%d_%H%M%S")
+    run_id = datetime.now(timezone.utc).strftime("run_%Y%m%d_%H%M%S_%f")
     run_dir = RUNS_DIR / run_id
     run_dir.mkdir()
     _write_json(run_dir / "strategy_v1.json", result["strategy"])

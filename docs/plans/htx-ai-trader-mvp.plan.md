@@ -530,6 +530,6 @@ Current state:
 - [x] Implement static frontend console.
 - [x] Install backend dependencies.
 - [x] Verify tests with `python3 -m pytest`.
-- [ ] Add FastAPI route-level tests.
-- [ ] Add README run instructions.
+- [x] Add FastAPI route-level tests.
+- [x] Add README run instructions.
 - [ ] Push committed implementation to the Build-Profit remote.
