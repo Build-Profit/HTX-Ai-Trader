@@ -1,0 +1,18 @@
+[project]
+name = "htx-ai-trader-backend"
+version = "0.1.0"
+description = "ProfitPrince / HTX-Ai-Trader backend MVP"
+requires-python = ">=3.9"
+dependencies = [
+  "fastapi>=0.110.0",
+  "uvicorn>=0.27.0"
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=8.0.0"
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]

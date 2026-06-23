@@ -1,0 +1,1 @@
+"""ProfitPrince backend package."""

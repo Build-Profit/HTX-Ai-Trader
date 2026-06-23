@@ -1,0 +1,22 @@
+[
+  {"timestamp":"2026-06-10T00:00:00Z","open":3400,"high":3420,"low":3370,"close":3410,"volume":8200},
+  {"timestamp":"2026-06-10T01:00:00Z","open":3410,"high":3440,"low":3395,"close":3432,"volume":7900},
+  {"timestamp":"2026-06-10T02:00:00Z","open":3432,"high":3460,"low":3410,"close":3450,"volume":7600},
+  {"timestamp":"2026-06-10T03:00:00Z","open":3450,"high":3475,"low":3425,"close":3462,"volume":7800},
+  {"timestamp":"2026-06-10T04:00:00Z","open":3462,"high":3470,"low":3310,"close":3340,"volume":9600},
+  {"timestamp":"2026-06-10T05:00:00Z","open":3340,"high":3360,"low":3230,"close":3260,"volume":11200},
+  {"timestamp":"2026-06-10T06:00:00Z","open":3260,"high":3290,"low":3180,"close":3215,"volume":11800},
+  {"timestamp":"2026-06-10T07:00:00Z","open":3215,"high":3295,"low":3200,"close":3280,"volume":9000},
+  {"timestamp":"2026-06-10T08:00:00Z","open":3280,"high":3395,"low":3270,"close":3380,"volume":8700},
+  {"timestamp":"2026-06-10T09:00:00Z","open":3380,"high":3500,"low":3360,"close":3488,"volume":10300},
+  {"timestamp":"2026-06-10T10:00:00Z","open":3488,"high":3575,"low":3470,"close":3550,"volume":9900},
+  {"timestamp":"2026-06-10T11:00:00Z","open":3550,"high":3600,"low":3510,"close":3535,"volume":8200},
+  {"timestamp":"2026-06-10T12:00:00Z","open":3535,"high":3540,"low":3420,"close":3445,"volume":9100},
+  {"timestamp":"2026-06-10T13:00:00Z","open":3445,"high":3460,"low":3330,"close":3350,"volume":10400},
+  {"timestamp":"2026-06-10T14:00:00Z","open":3350,"high":3380,"low":3270,"close":3300,"volume":10900},
+  {"timestamp":"2026-06-10T15:00:00Z","open":3300,"high":3390,"low":3290,"close":3375,"volume":8900},
+  {"timestamp":"2026-06-10T16:00:00Z","open":3375,"high":3440,"low":3350,"close":3420,"volume":8100},
+  {"timestamp":"2026-06-10T17:00:00Z","open":3420,"high":3490,"low":3400,"close":3475,"volume":7900},
+  {"timestamp":"2026-06-10T18:00:00Z","open":3475,"high":3570,"low":3450,"close":3555,"volume":9400},
+  {"timestamp":"2026-06-10T19:00:00Z","open":3555,"high":3590,"low":3520,"close":3562,"volume":7200}
+]
