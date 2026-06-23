@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>ProfitPrince Console</title>
+    <link rel="stylesheet" href="./styles/main.css">
+  </head>
+  <body>
+    <main class="app-shell">
+      <section class="topbar" aria-label="Workspace header">
+        <div>
+          <p class="eyebrow">HTX-Ai-Trader</p>
+          <h1>ProfitPrince Strategy Console</h1>
+        </div>
+        <div class="connection-panel">
+          <label class="field compact">
+            <span>API</span>
+            <input id="apiBase" type="url" value="http://127.0.0.1:8000" spellcheck="false">
+          </label>
+          <button id="healthButton" class="icon-button" type="button" title="Check API health" aria-label="Check API health">↻</button>
+          <span id="healthStatus" class="status-pill neutral">offline</span>
+        </div>
+      </section>
+
+      <section class="workspace-grid">
+        <aside class="control-panel">
+          <div class="panel-head">
+            <h2>Strategy</h2>
+            <span id="runState" class="status-pill neutral">idle</span>
+          </div>
+
+          <label class="field">
+            <span>Prompt</span>
+            <textarea id="strategyText" rows="8">Use 1000 USDT on BTC/USDT. Buy drop 5%, take profit 10%, stop loss 3%, max drawdown 5%.</textarea>
+          </label>
+
+          <div class="preset-row" role="group" aria-label="Prompt presets">
+            <button class="preset active" type="button" data-preset="balanced">Balanced</button>
+            <button class="preset" type="button" data-preset="defensive">Defensive</button>
+            <button class="preset" type="button" data-preset="eth">ETH</button>
+          </div>
+
+          <button id="runButton" class="primary-button" type="button">Run Demo</button>
+
+          <div id="errorBox" class="error-box" hidden></div>
+
+          <div class="json-panel">
+            <div class="panel-head tight">
+              <h2>Strategy JSON</h2>
+              <span id="strategyVersion" class="mono-chip">v1</span>
+            </div>
+            <pre id="strategyJson">{}</pre>
+          </div>
+        </aside>
+
+        <section class="main-panel">
+          <div class="metric-grid">
+            <article class="metric-tile accent-green">
+              <span>Total Return</span>
+              <strong id="totalReturn">--</strong>
+            </article>
+            <article class="metric-tile accent-amber">
+              <span>Buy & Hold</span>
+              <strong id="buyHold">--</strong>
+            </article>
+            <article class="metric-tile accent-cyan">
+              <span>Win Rate</span>
+              <strong id="winRate">--</strong>
+            </article>
+            <article class="metric-tile accent-red">
+              <span>Max Drawdown</span>
+              <strong id="maxDrawdown">--</strong>
+            </article>
+            <article class="metric-tile accent-violet">
+              <span>Trades</span>
+              <strong id="tradeCount">--</strong>
+            </article>
+          </div>
+
+          <section class="chart-section">
+            <div class="panel-head">
+              <div>
+                <h2>Equity Curve</h2>
+                <p id="marketMeta" class="subline">No run loaded</p>
+              </div>
+              <span id="dataSource" class="status-pill neutral">no data</span>
+            </div>
+            <canvas id="equityChart" width="980" height="360"></canvas>
+          </section>
+
+          <section class="detail-grid">
+            <article class="info-panel">
+              <div class="panel-head tight">
+                <h2>AI Risk</h2>
+                <span id="riskLevel" class="status-pill neutral">--</span>
+              </div>
+              <p id="riskSummary" class="risk-summary">--</p>
+              <dl class="risk-list">
+                <div>
+                  <dt>Score</dt>
+                  <dd id="riskScore">--</dd>
+                </div>
+                <div>
+                  <dt>Recommendation</dt>
+                  <dd id="executionRecommendation">--</dd>
+                </div>
+                <div>
+                  <dt>Key Risk</dt>
+                  <dd id="keyRisk">--</dd>
+                </div>
+                <div>
+                  <dt>Next Parameter</dt>
+                  <dd id="riskSuggestion">--</dd>
+                </div>
+              </dl>
+            </article>
+
+            <article class="info-panel">
+              <div class="panel-head tight">
+                <h2>Proof</h2>
+                <span id="proofVersion" class="mono-chip">v1</span>
+              </div>
+              <dl class="hash-list">
+                <div>
+                  <dt>Strategy</dt>
+                  <dd id="strategyHash">--</dd>
+                </div>
+                <div>
+                  <dt>Backtest</dt>
+                  <dd id="backtestHash">--</dd>
+                </div>
+                <div>
+                  <dt>Execution</dt>
+                  <dd id="executionHash">--</dd>
+                </div>
+                <div>
+                  <dt>Combined</dt>
+                  <dd id="combinedHash">--</dd>
+                </div>
+              </dl>
+            </article>
+          </section>
+
+          <section class="table-section">
+            <div class="panel-head">
+              <h2>Simulated Orders</h2>
+              <span id="orderCount" class="mono-chip">0 logs</span>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Time</th>
+                    <th>Event</th>
+                    <th>Status</th>
+                    <th>Price</th>
+                    <th>Qty</th>
+                  </tr>
+                </thead>
+                <tbody id="ordersBody">
+                  <tr>
+                    <td colspan="5" class="empty-cell">No simulated order logs</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+        </section>
+      </section>
+    </main>
+
+    <script type="module" src="./src/app.js"></script>
+  </body>
+</html>
