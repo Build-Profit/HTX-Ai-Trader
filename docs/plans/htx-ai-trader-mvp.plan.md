@@ -62,7 +62,7 @@ We will follow practical "Linus-style" engineering principles:
 
 2. Kill special cases.
    - One strategy schema should serve parser, backtest, simulation, dashboard, and proof.
-   - Demo Mode should use the same endpoints as normal mode, only with sample data.
+   - Demo Mode should use the same endpoints as normal mode, with live, cached, or sample data selected by the market loader.
 
 3. Make errors impossible where possible.
    - Validate strategy JSON before backtesting.
@@ -267,6 +267,7 @@ Implemented:
 - `get_klines(symbol, timeframe, limit)`.
 - HTX API adapter.
 - Last-successful HTX snapshot cache in `backend/app/data/cache/`.
+- Cache metadata for `fetchedAt`, `endpoint`, `symbol`, `timeframe`, and `count`.
 - Local sample-data fallback in `backend/app/data/sample_klines/`.
 - Data normalization into one `Kline` model.
 - Source label: `htx_live`, `htx_cached`, or `local_sample`.

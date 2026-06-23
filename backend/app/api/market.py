@@ -13,5 +13,6 @@ def klines(symbol: str = Query("BTC/USDT"), timeframe: str = Query("1h"), limit:
         "symbol": market["symbol"],
         "timeframe": market["timeframe"],
         "source": market["source"],
+        "metadata": market.get("metadata", {}),
         "klines": klines_to_dict(market["klines"]),
     }

@@ -36,6 +36,7 @@ def run_demo(strategy_text: str) -> Dict[str, object]:
             "symbol": market["symbol"],
             "timeframe": market["timeframe"],
             "source": market["source"],
+            "metadata": market.get("metadata", {}),
             "klines": klines_to_dict(klines),
         },
         "backtest": backtest.to_dict(),
@@ -53,7 +54,7 @@ def _write_run_artifacts(result: Dict[str, object]) -> None:
     run_dir = RUNS_DIR / run_id
     run_dir.mkdir()
     _write_json(run_dir / "strategy_v1.json", result["strategy"])
-    _write_json(run_dir / "market_meta.json", {key: result["market"][key] for key in ("symbol", "timeframe", "source")})
+    _write_json(run_dir / "market_meta.json", {key: result["market"][key] for key in ("symbol", "timeframe", "source", "metadata")})
     _write_json(run_dir / "backtest_v1.json", result["backtest"])
     _write_json(run_dir / "risk_report_v1.json", result["risk"])
     _write_json(run_dir / "simulated_orders.json", result["executionLogs"])

@@ -12,6 +12,7 @@ def _sample_market(symbol="BTC/USDT", timeframe="1h", limit=120):
         "symbol": symbol,
         "timeframe": timeframe,
         "source": "local_sample",
+        "metadata": {},
         "klines": load_sample_klines(symbol, timeframe, limit),
     }
 
@@ -55,6 +56,7 @@ def test_demo_run_route_returns_full_workflow(monkeypatch):
     assert response.status_code == 200
     payload = response.json()
     assert payload["market"]["source"] == "local_sample"
+    assert payload["market"]["metadata"] == {}
     assert payload["strategy"]["symbol"] == "BTC/USDT"
     assert payload["backtest"]["tradeCount"] >= 1
     assert payload["risk"]["executionRecommendation"]
@@ -83,3 +85,29 @@ def test_backtest_route_runs_with_payload_klines():
     assert payload["dataSource"] == "test_payload"
     assert payload["tradeCount"] >= 1
     assert payload["equityCurve"]
+
+
+def test_market_route_returns_metadata(monkeypatch):
+    metadata = {
+        "fetchedAt": "2026-06-23T14:30:00Z",
+        "endpoint": "https://api.htx.com/market/history/kline?symbol=btcusdt&period=60min&size=2",
+        "symbol": "BTC/USDT",
+        "timeframe": "1h",
+        "count": 2,
+    }
+
+    def _cached_market(symbol="BTC/USDT", timeframe="1h", limit=120):
+        market = _sample_market(symbol, timeframe, limit)
+        market["source"] = "htx_cached"
+        market["metadata"] = metadata
+        return market
+
+    monkeypatch.setattr("app.api.market.get_klines", _cached_market)
+
+    response = client.get("/api/market/klines?symbol=BTC/USDT&timeframe=1h&limit=2")
+
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["source"] == "htx_cached"
+    assert payload["metadata"] == metadata
+    assert payload["klines"]

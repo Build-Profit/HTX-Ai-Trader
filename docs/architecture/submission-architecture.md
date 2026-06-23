@@ -71,10 +71,10 @@ Responsibilities:
 
 - Request HTX-compatible K-line endpoints.
 - Normalize market data into `Kline`.
-- Persist successful live pulls into `backend/app/data/cache/`.
+- Persist successful live pulls into `backend/app/data/cache/` with `fetchedAt`, `endpoint`, `symbol`, `timeframe`, and `count` metadata.
 - Fall back to the latest cached snapshot if live data is unavailable.
 - Fall back to bundled local sample data if no cached snapshot exists.
-- Label data source.
+- Label data source and show the cached snapshot time when `source` is `htx_cached`.
 
 ### Backtest Engine
 

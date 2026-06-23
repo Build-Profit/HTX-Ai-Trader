@@ -121,7 +121,7 @@ function renderResult(result) {
   elements.maxDrawdown.textContent = formatPercent(backtest.maxDrawdownPercent);
   elements.tradeCount.textContent = String(backtest.tradeCount ?? "--");
 
-  elements.marketMeta.textContent = `${backtest.symbol} ${backtest.timeframe} · final equity ${formatNumber(backtest.finalEquity)} USDT`;
+  elements.marketMeta.textContent = marketMetaText(backtest, market);
   setStatus(elements.dataSource, market?.source || backtest.dataSource || "unknown", sourceTone(market?.source || backtest.dataSource));
   drawEquityChart(elements.equityChart, backtest.equityCurve);
 
@@ -196,6 +196,32 @@ function sourceTone(source) {
     return "warn";
   }
   return "neutral";
+}
+
+function marketMetaText(backtest, market) {
+  const parts = [`${backtest.symbol} ${backtest.timeframe}`, `final equity ${formatNumber(backtest.finalEquity)} USDT`];
+  if (market?.source === "htx_cached" && market?.metadata?.fetchedAt) {
+    parts.push(`Last HTX snapshot: ${formatSnapshotTime(market.metadata.fetchedAt)}`);
+  }
+  return parts.join(" · ");
+}
+
+function formatSnapshotTime(value) {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) {
+    return String(value);
+  }
+
+  const year = date.getUTCFullYear();
+  const month = pad2(date.getUTCMonth() + 1);
+  const day = pad2(date.getUTCDate());
+  const hours = pad2(date.getUTCHours());
+  const minutes = pad2(date.getUTCMinutes());
+  return `${year}-${month}-${day} ${hours}:${minutes} UTC`;
+}
+
+function pad2(value) {
+  return String(value).padStart(2, "0");
 }
 
 function escapeHtml(value) {

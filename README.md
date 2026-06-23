@@ -132,8 +132,9 @@ MVP requirements:
 - Support historical K-line data for backtesting.
 - Support realtime or near-realtime price display.
 - Use a last-successful HTX-compatible K-line snapshot when the live API is unavailable.
+- Store cached snapshot metadata: fetched time, endpoint, symbol, timeframe, and K-line count.
 - Use bundled local sample data only when no live or cached snapshot exists.
-- Clearly label the data source in the UI.
+- Clearly label the data source in the UI and show the last HTX snapshot time for cached data.
 
 ### 3. Backtesting Engine
 

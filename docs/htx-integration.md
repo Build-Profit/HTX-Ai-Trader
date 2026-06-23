@@ -33,6 +33,14 @@ Behavior:
 6. If the live endpoint is unavailable, fall back to the latest cached snapshot.
 7. If no cached snapshot exists, fall back to bundled local sample data in `backend/app/data/sample_klines/`.
 
+Cached snapshot metadata:
+
+- `fetchedAt`
+- `endpoint`
+- `symbol`
+- `timeframe`
+- `count`
+
 Data source labels:
 
 - `htx_live`
@@ -41,6 +49,8 @@ Data source labels:
 - `local_sample_preview`
 
 The cache directory is runtime state and is intentionally gitignored. The committed `sample_klines/` files remain stable demo fixtures and are not overwritten by live market pulls.
+
+When the API returns `source: "htx_cached"`, the frontend displays the cached data age as `Last HTX snapshot: YYYY-MM-DD HH:mm UTC`.
 
 ## Simulated Execution Boundary
 

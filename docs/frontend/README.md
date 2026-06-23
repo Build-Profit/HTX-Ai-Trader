@@ -27,6 +27,7 @@ The console calls `POST /api/demo/run` and renders the full backend response:
 - Generated strategy JSON.
 - Backtest metrics.
 - Equity curve.
+- Data source label, including `Last HTX snapshot: YYYY-MM-DD HH:mm UTC` when cached HTX data is used.
 - AI risk explanation.
 - Simulated execution logs.
 - Proof hashes.
