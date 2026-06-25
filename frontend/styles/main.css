@@ -450,6 +450,111 @@ tbody tr:last-child td {
   line-height: 1.4;
 }
 
+.pill-label {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.head-pills {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.primary-button.compact {
+  height: 34px;
+  padding: 0 14px;
+  border-color: rgba(61, 220, 132, 0.5);
+  background: #1d4d35;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.primary-button.compact:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.controller-panel,
+.bot-panel {
+  padding: 14px;
+}
+
+.config-title {
+  margin: 14px 0 8px;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.param-list {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+}
+
+.param-list > div {
+  display: grid;
+  grid-template-columns: 160px minmax(0, 1fr);
+  gap: 10px;
+  align-items: start;
+  min-height: 24px;
+}
+
+.param-list.head-row {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  margin-top: 12px;
+}
+
+.param-list.head-row > div {
+  grid-template-columns: 1fr;
+  gap: 4px;
+  min-height: 0;
+}
+
+.config-list {
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  margin-top: 4px;
+}
+
+.config-list > div {
+  grid-template-columns: 150px minmax(0, 1fr);
+}
+
+.bot-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  margin-top: 14px;
+}
+
+.bot-block .panel-head.tight.sub {
+  min-height: 24px;
+  margin-bottom: 6px;
+}
+
+.bot-block h3 {
+  font-size: 13px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0;
+}
+
+.badge-llm {
+  border-color: rgba(61, 220, 132, 0.55);
+}
+
+.badge-rules {
+  border-color: rgba(246, 185, 80, 0.5);
+}
+
 @media (max-width: 1100px) {
   .workspace-grid,
   .detail-grid {
@@ -458,6 +563,14 @@ tbody tr:last-child td {
 
   .metric-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .bot-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .param-list.head-row {
+    grid-template-columns: 1fr;
   }
 }
 
@@ -485,7 +598,9 @@ tbody tr:last-child td {
   }
 
   .risk-list div,
-  .hash-list div {
+  .hash-list div,
+  .param-list > div,
+  .config-list > div {
     grid-template-columns: 1fr;
   }
 

@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.api import backtest, demo, market, proof, risk, strategy, trade
+from app.api import backtest, demo, hb, market, proof, risk, strategy, trade
 
 
 app = FastAPI(title="ProfitPrince HTX-Ai-Trader API", version="0.1.0")
@@ -21,6 +21,7 @@ app.include_router(risk.router)
 app.include_router(trade.router)
 app.include_router(proof.router)
 app.include_router(demo.router)
+app.include_router(hb.router)
 
 
 @app.get("/api/health")

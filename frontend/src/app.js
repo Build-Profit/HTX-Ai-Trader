@@ -1,4 +1,6 @@
 import { checkHealth, runDemo } from "./api.js";
+import { checkHbHealth } from "./hb-api.js";
+import { initHbPanel } from "./hb-panel.js";
 import { drawEquityChart } from "./charts.js";
 import { presets } from "./demo.js";
 import { sampleResult } from "./sample-result.js";
@@ -8,6 +10,7 @@ const elements = {
   apiBase: document.querySelector("#apiBase"),
   healthButton: document.querySelector("#healthButton"),
   healthStatus: document.querySelector("#healthStatus"),
+  hbHealthStatus: document.querySelector("#hbHealthStatus"),
   strategyText: document.querySelector("#strategyText"),
   runButton: document.querySelector("#runButton"),
   runState: document.querySelector("#runState"),
@@ -21,6 +24,7 @@ const elements = {
   tradeCount: document.querySelector("#tradeCount"),
   marketMeta: document.querySelector("#marketMeta"),
   dataSource: document.querySelector("#dataSource"),
+  engineStatus: document.querySelector("#engineStatus"),
   equityChart: document.querySelector("#equityChart"),
   riskLevel: document.querySelector("#riskLevel"),
   riskSummary: document.querySelector("#riskSummary"),
@@ -35,7 +39,34 @@ const elements = {
   combinedHash: document.querySelector("#combinedHash"),
   ordersBody: document.querySelector("#ordersBody"),
   orderCount: document.querySelector("#orderCount"),
+  hbControllerName: document.querySelector("#hbControllerName"),
+  hbControllerType: document.querySelector("#hbControllerType"),
+  hbGeneratedBy: document.querySelector("#hbGeneratedBy"),
+  hbConfigBody: document.querySelector("#hbConfigBody"),
+  hbBotDeployBtn: document.querySelector("#hbBotDeployBtn"),
+  hbBotStopBtn: document.querySelector("#hbBotStopBtn"),
+  hbBotId: document.querySelector("#hbBotId"),
+  hbBotStatus: document.querySelector("#hbBotStatus"),
+  hbBotExecutors: document.querySelector("#hbBotExecutors"),
+  hbBotPositions: document.querySelector("#hbBotPositions"),
+  hbBotLogsBody: document.querySelector("#hbBotLogsBody"),
+  hbBotLogCount: document.querySelector("#hbBotLogCount"),
 };
+
+const hbPanel = initHbPanel({
+  apiBaseGetter: () => elements.apiBase.value,
+  elements: {
+    hbBotDeployBtn: elements.hbBotDeployBtn,
+    hbBotStopBtn: elements.hbBotStopBtn,
+    hbBotId: elements.hbBotId,
+    hbBotStatus: elements.hbBotStatus,
+    hbBotExecutors: elements.hbBotExecutors,
+    hbBotPositions: elements.hbBotPositions,
+    hbBotLogsBody: elements.hbBotLogsBody,
+    hbBotLogCount: elements.hbBotLogCount,
+  },
+  onBotChanged: () => {},
+});
 
 let latestResult = null;
 
@@ -50,6 +81,7 @@ function bindEvents() {
   elements.runButton.addEventListener("click", handleRunDemo);
   elements.apiBase.addEventListener("change", () => {
     localStorage.setItem("profitprince.apiBase", elements.apiBase.value);
+    refreshHbHealth().catch(() => {});
   });
 
   document.querySelectorAll(".preset").forEach((button) => {
@@ -72,6 +104,7 @@ function bindEvents() {
 
 async function handleHealthCheck() {
   setStatus(elements.healthStatus, "checking", "warn");
+  setStatus(elements.hbHealthStatus, "checking", "warn");
   try {
     await checkHealth(elements.apiBase.value);
     setStatus(elements.healthStatus, "online", "ok");
@@ -79,6 +112,33 @@ async function handleHealthCheck() {
     setStatus(elements.healthStatus, "offline", "danger");
     showError(error.message);
   }
+  await refreshHbHealth();
+}
+
+async function refreshHbHealth() {
+  try {
+    const hb = await checkHbHealth(elements.apiBase.value);
+    updateHbHealth(hb);
+  } catch {
+    setStatus(elements.hbHealthStatus, "offline", "danger");
+    hbPanel.setHbReachable(false);
+  }
+}
+
+function updateHbHealth(hb) {
+  const reachable = !!hb?.reachable;
+  const engine = hb?.engine || "local";
+  if (!reachable) {
+    setStatus(elements.hbHealthStatus, "offline", "danger");
+    hbPanel.setHbReachable(false);
+    return;
+  }
+  if (engine === "hummingbot") {
+    setStatus(elements.hbHealthStatus, "hummingbot", "ok");
+  } else {
+    setStatus(elements.hbHealthStatus, "local", "warn");
+  }
+  hbPanel.setHbReachable(true);
 }
 
 async function handleRunDemo() {
@@ -102,6 +162,7 @@ async function handleRunDemo() {
 
 function queueInitialRefresh() {
   window.setTimeout(async () => {
+    refreshHbHealth().catch(() => {});
     try {
       await handleRunDemo();
     } catch {
@@ -125,6 +186,10 @@ function renderResult(result) {
   setStatus(elements.dataSource, market?.source || backtest.dataSource || "unknown", sourceTone(market?.source || backtest.dataSource));
   drawEquityChart(elements.equityChart, backtest.equityCurve);
 
+  renderEngine(result.engine, result.paperTradeDeployable);
+  renderHbController(result.hummingbot);
+  hbPanel.setController(result.hummingbot);
+
   setStatus(elements.riskLevel, risk.riskLevel || "--", riskTone(risk.riskLevel));
   elements.riskSummary.textContent = risk.summary || "--";
   elements.riskScore.textContent = String(risk.riskScore ?? "--");
@@ -139,6 +204,60 @@ function renderResult(result) {
   elements.combinedHash.textContent = shortHash(proof.combinedHash);
 
   renderOrders(executionLogs);
+}
+
+function renderHbController(hb) {
+  if (!hb) {
+    elements.hbControllerName.textContent = "--";
+    elements.hbControllerType.textContent = "--";
+    setStatus(elements.hbGeneratedBy, "--", "neutral");
+    elements.hbGeneratedBy.classList.remove("badge-llm", "badge-rules");
+    elements.hbConfigBody.innerHTML = '<div><dt>—</dt><dd>No config</dd></div>';
+    return;
+  }
+  elements.hbControllerName.textContent = hb.controllerName || "--";
+  elements.hbControllerType.textContent = hb.controllerType || "--";
+  const by = hb.generatedBy || "rules";
+  setStatus(elements.hbGeneratedBy, by, by === "llm" ? "ok" : "warn");
+  elements.hbGeneratedBy.classList.remove("badge-llm", "badge-rules");
+  elements.hbGeneratedBy.classList.add(by === "llm" ? "badge-llm" : "badge-rules");
+  renderHbConfig(hb.config || {});
+}
+
+function renderHbConfig(config) {
+  const entries = Object.entries(config || {});
+  if (!entries.length) {
+    elements.hbConfigBody.innerHTML = '<div><dt>—</dt><dd>No config</dd></div>';
+    return;
+  }
+  elements.hbConfigBody.innerHTML = entries
+    .map(
+      ([key, value]) => `<div>
+      <dt>${escapeHtml(key)}</dt>
+      <dd>${escapeHtml(formatConfigValue(value))}</dd>
+    </div>`,
+    )
+    .join("");
+}
+
+function formatConfigValue(value) {
+  if (value === null || value === undefined) {
+    return "--";
+  }
+  if (typeof value === "object") {
+    return JSON.stringify(value);
+  }
+  return String(value);
+}
+
+function renderEngine(engine, paperTradeDeployable) {
+  if (!engine) {
+    setStatus(elements.engineStatus, "engine: --", "neutral");
+    return;
+  }
+  const bt = engine.backtest || "local";
+  const text = paperTradeDeployable ? `engine: ${bt} · paper: ready` : `engine: ${bt}`;
+  setStatus(elements.engineStatus, text, bt === "hummingbot" ? "ok" : "warn");
 }
 
 function renderOrders(logs) {
