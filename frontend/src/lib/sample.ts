@@ -1,30 +1,19 @@
-export const sampleResult = {
-  input: "Use 1000 USDT on BTC/USDT. Buy drop 5%, take profit 10%, stop loss 3%, max drawdown 5%.",
+import type { DemoResult } from "../types";
+
+export const sampleResult: DemoResult = {
+  input:
+    "Use 1000 USDT on BTC/USDT. Buy drop 5%, take profit 10%, stop loss 3%, max drawdown 5%.",
   strategy: {
     symbol: "BTC/USDT",
     timeframe: "1h",
     capital: 1000,
-    entry: {
-      type: "price_drop",
-      dropPercent: 5,
-    },
-    exit: {
-      takeProfitPercent: 10,
-      stopLossPercent: 3,
-    },
-    risk: {
-      maxDrawdownPercent: 5,
-      positionSizePercent: 30,
-      riskLevel: "medium",
-    },
+    entry: { type: "price_drop", drop_percent: 5 },
+    exit: { take_profit_percent: 10, stop_loss_percent: 3 },
+    risk: { max_drawdown_percent: 5, position_size_percent: 30, risk_level: "medium" },
     template: "dip_buy_take_profit_stop_loss",
     version: "v1",
   },
-  market: {
-    symbol: "BTC/USDT",
-    timeframe: "1h",
-    source: "local_sample_preview",
-  },
+  market: { symbol: "BTC/USDT", timeframe: "1h", source: "local_sample_preview" },
   backtest: {
     symbol: "BTC/USDT",
     timeframe: "1h",
@@ -80,9 +69,12 @@ export const sampleResult = {
   risk: {
     riskScore: 25,
     riskLevel: "low",
-    summary: "Strategy return 1.95% vs buy-and-hold 3.76%, max drawdown 2.93%, trades 2.",
-    suitableMarket: "Range or pullback markets with enough volatility to trigger entries.",
-    unsuitableMarket: "Fast one-way crashes, thin liquidity, or strong trend markets without pullbacks.",
+    summary:
+      "Strategy return 1.95% vs buy-and-hold 3.76%, max drawdown 2.93%, trades 2.",
+    suitableMarket:
+      "Range or pullback markets with enough volatility to trigger entries.",
+    unsuitableMarket:
+      "Fast one-way crashes, thin liquidity, or strong trend markets without pullbacks.",
     keyRisks: ["The strategy underperformed buy-and-hold over this sample."],
     suggestions: ["Compare with V2 parameters before simulated execution."],
     executionRecommendation: "suitable_for_demo_simulation",
@@ -119,9 +111,13 @@ export const sampleResult = {
   proof: {
     version: "v1",
     timestamp: "2026-06-23T03:20:19.937482+00:00",
-    strategyHash: "5c5004804edae3725e41452065d6aa7ec7634c6fe47818ed59b98fe2faea447c",
-    backtestHash: "0f7f90d996610d79353c491980c76c3e1a1e56be34190be0349dc96974bc6b30",
-    executionLogHash: "1fe922bb5baa63fca8cd74d1577ab2c6cff6534c13d43b7ee9c54fd91ce8786f",
-    combinedHash: "b0c2558e2e02d87d87c1cdd5f8e617aa42773fa8b8ca137ecabff2f50b134263",
+    strategyHash:
+      "5c5004804edae3725e41452065d6aa7ec7634c6fe47818ed59b98fe2faea447c",
+    backtestHash:
+      "0f7f90d996610d79353c491980c76c3e1a1e56be34190be0349dc96974bc6b30",
+    executionLogHash:
+      "1fe922bb5baa63fca8cd74d1577ab2c6cff6534c13d43b7ee9c54fd91ce8786f",
+    combinedHash:
+      "b0c2558e2e02d87d87c1cdd5f8e617aa42773fa8b8ca137ecabff2f50b134263",
   },
 };

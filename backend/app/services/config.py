@@ -18,7 +18,7 @@ def hummingbot_enabled() -> bool:
 
 
 def hummingbot_api_url() -> str:
-    return _str("HUMMINGBOT_API_URL", "http://localhost:8001").rstrip("/")
+    return _str("HUMMINGBOT_API_URL", "http://localhost:8000").rstrip("/")
 
 
 def hummingbot_api_user() -> str:
