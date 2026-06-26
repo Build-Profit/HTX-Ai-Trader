@@ -5,7 +5,7 @@ from typing import Dict
 
 from app.models.strategy import Strategy
 from app.services.backtest_engine import run_backtest
-from app.services.htx_market import get_klines, klines_to_dict
+from app.services.htx_market import get_klines_with_fine, klines_to_dict, make_fine_fetch_callback
 from app.services.proof_hasher import generate_proof
 from app.services.risk_explainer import explain_risk
 from app.services.simulator import simulate_trade
@@ -18,11 +18,14 @@ RUNS_DIR = ROOT_DIR / "runs"
 
 def run_demo(strategy_text: str) -> Dict[str, object]:
     strategy = parse_strategy_text(strategy_text)
-    market = get_klines(strategy.symbol, strategy.timeframe, limit=120)
+    market = get_klines_with_fine(strategy.symbol, strategy.timeframe, limit=120)
     klines = market["klines"]
-    backtest = run_backtest(strategy, klines, data_source=str(market["source"]))
+    data_source = str(market["source"])
+    fine_klines_map = market.get("fineKlines")
+    fetch_fine_cb = make_fine_fetch_callback(strategy.symbol) if data_source == "htx_live" else None
+    backtest = run_backtest(strategy, klines, data_source=data_source, fine_klines_map=fine_klines_map, fetch_fine_callback=fetch_fine_cb)
     risk = explain_risk(strategy, backtest)
-    logs = simulate_trade(strategy, klines[:30])
+    logs = simulate_trade(strategy, klines[:30], fine_klines_map=fine_klines_map)
     proof = generate_proof(
         strategy.to_dict(),
         backtest.to_dict(),

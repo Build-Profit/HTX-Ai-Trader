@@ -3,7 +3,7 @@ from typing import Dict
 
 
 SUPPORTED_SYMBOLS = {"BTC/USDT", "ETH/USDT"}
-SUPPORTED_TIMEFRAMES = {"1m", "5m", "1h", "4h", "1d"}
+SUPPORTED_TIMEFRAMES = {"1m", "5m", "15m", "30m", "1h", "4h", "1d", "1w", "1mon", "1y"}
 
 
 @dataclass(frozen=True)

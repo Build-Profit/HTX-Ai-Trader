@@ -7,13 +7,14 @@ from app.services.htx_market import load_sample_klines
 client = TestClient(app)
 
 
-def _sample_market(symbol="BTC/USDT", timeframe="1h", limit=120):
+def _sample_market_with_fine(symbol="BTC/USDT", timeframe="1h", limit=120):
     return {
         "symbol": symbol,
         "timeframe": timeframe,
         "source": "local_sample",
         "metadata": {},
         "klines": load_sample_klines(symbol, timeframe, limit),
+        "fineKlines": None,
     }
 
 
@@ -46,7 +47,7 @@ def test_strategy_parse_route_rejects_empty_text():
 
 
 def test_demo_run_route_returns_full_workflow(monkeypatch):
-    monkeypatch.setattr("app.services.demo_runner.get_klines", _sample_market)
+    monkeypatch.setattr("app.services.demo_runner.get_klines_with_fine", _sample_market_with_fine)
 
     response = client.post(
         "/api/demo/run",
@@ -97,7 +98,7 @@ def test_market_route_returns_metadata(monkeypatch):
     }
 
     def _cached_market(symbol="BTC/USDT", timeframe="1h", limit=120):
-        market = _sample_market(symbol, timeframe, limit)
+        market = _sample_market_with_fine(symbol, timeframe, limit)
         market["source"] = "htx_cached"
         market["metadata"] = metadata
         return market
