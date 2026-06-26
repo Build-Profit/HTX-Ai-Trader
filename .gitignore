@@ -18,3 +18,5 @@ coverage/
 runs/*
 !runs/.gitkeep
 backend/app/data/cache/
+.trae/
+.vscode/
