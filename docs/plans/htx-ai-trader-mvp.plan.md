@@ -129,8 +129,12 @@ Implemented structure:
 ```text
 HTX-Ai-Trader/
 ├── README.md
+├── .gitignore
 ├── docs/
+│   ├── README.md
+│   ├── htx-integration.md
 │   ├── plans/
+│   │   └── htx-ai-trader-mvp.plan.md
 │   ├── product/
 │   ├── architecture/
 │   ├── engineering/
@@ -140,19 +144,45 @@ HTX-Ai-Trader/
 │   ├── web3/
 │   ├── qa-demo/
 │   └── pitch/
-├── frontend/
+├── frontend/       # React 18 + TypeScript + Vite SPA
 │   ├── package.json
+│   ├── vite.config.ts
+│   ├── tsconfig.json
 │   ├── index.html
 │   ├── src/
-│   │   ├── app.js
-│   │   ├── api.js
-│   │   ├── charts.js
-│   │   ├── demo.js
-│   │   └── ui-state.js
+│   │   ├── main.tsx
+│   │   ├── App.tsx
+│   │   ├── types.ts
+│   │   ├── api/
+│   │   │   └── hb.ts
+│   │   ├── lib/
+│   │   │   ├── strategy.ts
+│   │   │   ├── backtest.ts
+│   │   │   ├── risk.ts
+│   │   │   ├── proof.ts
+│   │   │   ├── llm.ts
+│   │   │   ├── presets.ts
+│   │   │   ├── sample.ts
+│   │   │   └── format.ts
+│   │   ├── hooks/
+│   │   │   ├── useHbHealth.ts
+│   │   │   └── useBotPolling.ts
+│   │   └── components/
+│   │       ├── TopBar.tsx
+│   │       ├── ControlPanel.tsx
+│   │       ├── MetricsGrid.tsx
+│   │       ├── EquityChart.tsx
+│   │       ├── RiskPanel.tsx
+│   │       ├── ProofPanel.tsx
+│   │       ├── OrdersTable.tsx
+│   │       ├── HbControllerPanel.tsx
+│   │       ├── HbBotPanel.tsx
+│   │       └── HbApiDebugPanel.tsx
 │   └── styles/
 │       └── main.css
 ├── backend/
 │   ├── pyproject.toml
+│   ├── .env / .env.example
 │   ├── app/
 │   │   ├── main.py
 │   │   ├── api/
@@ -162,7 +192,8 @@ HTX-Ai-Trader/
 │   │   │   ├── risk.py
 │   │   │   ├── trade.py
 │   │   │   ├── proof.py
-│   │   │   └── demo.py
+│   │   │   ├── demo.py
+│   │   │   └── hb.py
 │   │   ├── models/
 │   │   │   ├── strategy.py
 │   │   │   ├── market.py
@@ -175,14 +206,25 @@ HTX-Ai-Trader/
 │   │   │   ├── backtest_engine.py
 │   │   │   ├── risk_explainer.py
 │   │   │   ├── simulator.py
-│   │   │   └── proof_hasher.py
+│   │   │   ├── proof_hasher.py
+│   │   │   ├── ai_strategy_agent.py
+│   │   │   ├── demo_runner.py
+│   │   │   ├── hb_facade.py
+│   │   │   ├── hummingbot_client.py
+│   │   │   └── config.py
 │   │   └── data/
+│   │       ├── cache/          (gitignored)
 │   │       └── sample_klines/
 │   └── tests/
 │       ├── test_strategy_parser.py
 │       ├── test_backtest_engine.py
 │       ├── test_simulator.py
-│       └── test_proof_hasher.py
+│       ├── test_proof_hasher.py
+│       ├── test_demo_runner.py
+│       ├── test_api_routes.py
+│       ├── test_ai_strategy_agent.py
+│       ├── test_hb_facade.py
+│       └── test_htx_market_cache.py
 ├── runs/
 │   └── .gitkeep
 └── .gitignore
@@ -196,15 +238,12 @@ Primary owner: Frontend Lead
 
 Implemented:
 
-- Static console in `frontend/index.html`.
-- API client in `frontend/src/api.js`.
-- One-click demo run against `/api/demo/run`.
-- Strategy prompt presets.
-- Strategy JSON viewer.
-- Backtest metric tiles and canvas equity curve.
-- AI risk panel.
-- Simulated order table.
-- Proof hash panel.
+- React 18 + TypeScript SPA built with Vite.
+- 10 React components covering all required UI panels.
+- Client-side implementations of strategy parsing, backtesting, risk, and proof (mirrors backend).
+- Client-side LLM integration (OpenAI-compatible).
+- Hummingbot controller config and bot management panels.
+- Hardcoded sample result for preview fallback.
 
 Keep:
 
@@ -511,7 +550,8 @@ Frontend server:
 
 ```bash
 cd frontend
-python3 -m http.server 5173
+npm install
+npm run dev
 ```
 
 Open:

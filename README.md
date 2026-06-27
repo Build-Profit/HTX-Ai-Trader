@@ -272,11 +272,12 @@ flowchart LR
 
 Frontend:
 
-- Single-page ProfitPrince terminal interface.
+- React 18 + TypeScript SPA built with Vite.
 - Strategy input and generated JSON display.
 - K-line and equity curve visualization.
 - Dashboard, order log, and proof panel.
 - Demo Mode for stable presentation.
+- Hummingbot controller config and bot management panels.
 
 Backend:
 
@@ -287,6 +288,8 @@ Backend:
 - Risk explanation module.
 - Simulated trading module.
 - Hash / proof service.
+- Hummingbot facade (optional, local engines as fallback).
+- AI strategy agent (rule-based + optional LLM for Hummingbot controller configs).
 
 Web3:
 
@@ -430,7 +433,8 @@ Start the frontend from another terminal:
 
 ```bash
 cd frontend
-python3 -m http.server 5173
+npm install
+npm run dev
 ```
 
 Open:
