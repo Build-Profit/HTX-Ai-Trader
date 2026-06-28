@@ -18,15 +18,15 @@ def hummingbot_enabled() -> bool:
 
 
 def hummingbot_api_url() -> str:
-    return _str("HUMMINGBOT_API_URL", "http://localhost:8000").rstrip("/")
+    return _str("HUMMINGBOT_API_URL", "http://120.24.229.171:8000").rstrip("/")
 
 
 def hummingbot_api_user() -> str:
-    return _str("HUMMINGBOT_API_USER", "admin")
+    return _str("HUMMINGBOT_API_USER", "htxbot")
 
 
 def hummingbot_api_password() -> str:
-    return _str("HUMMINGBOT_API_PASSWORD", "admin")
+    return _str("HUMMINGBOT_API_PASSWORD", "hummingbot")
 
 
 def llm_enabled() -> bool:
