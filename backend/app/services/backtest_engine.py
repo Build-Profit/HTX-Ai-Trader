@@ -1,4 +1,4 @@
-from typing import List, Optional, Tuple
+from typing import Callable, Dict, List, Optional, Tuple
 
 from app.models.backtest import BacktestResult, EquityPoint, Trade
 from app.models.market import Kline
@@ -10,6 +10,8 @@ def run_backtest(
     klines: List[Kline],
     data_source: str = "local_sample",
     fee_rate: float = 0.001,
+    fine_klines_map: Optional[Dict[str, List[Kline]]] = None,
+    fetch_fine_callback: Optional[Callable[[str, str], List[Kline]]] = None,
 ) -> BacktestResult:
     if len(klines) < 2:
         raise ValueError("at least two klines are required")
@@ -28,17 +30,34 @@ def run_backtest(
         if quantity <= 0:
             last_peak = max(last_peak, kline.close)
             trigger_price = last_peak * (1 - strategy.entry.drop_percent / 100)
-            if kline.close <= trigger_price:
-                position_cost = cash * strategy.risk.position_size_percent / 100
-                entry_fee = position_cost * fee_rate
-                entry_price = kline.close
-                quantity = (position_cost - entry_fee) / entry_price
-                cash -= position_cost
-                entry_time = kline.timestamp
+            fine_klines = _get_fine_for_candle(
+                kline, strategy.timeframe, fine_klines_map, fetch_fine_callback,
+            )
+            if fine_klines:
+                for sub in fine_klines:
+                    if sub.close <= trigger_price:
+                        position_cost = cash * strategy.risk.position_size_percent / 100
+                        entry_fee = position_cost * fee_rate
+                        entry_price = sub.close
+                        quantity = (position_cost - entry_fee) / entry_price
+                        cash -= position_cost
+                        entry_time = sub.timestamp
+                        break
+            else:
+                if kline.close <= trigger_price:
+                    position_cost = cash * strategy.risk.position_size_percent / 100
+                    entry_fee = position_cost * fee_rate
+                    entry_price = kline.close
+                    quantity = (position_cost - entry_fee) / entry_price
+                    cash -= position_cost
+                    entry_time = kline.timestamp
         else:
             stop_price = entry_price * (1 - strategy.exit.stop_loss_percent / 100)
             take_price = entry_price * (1 + strategy.exit.take_profit_percent / 100)
-            exit_price, reason = _resolve_exit(kline, stop_price, take_price)
+            fine_klines = _get_fine_for_candle(
+                kline, strategy.timeframe, fine_klines_map, fetch_fine_callback,
+            )
+            exit_price, reason = _resolve_exit(kline, stop_price, take_price, fine_klines)
             if exit_price is not None and reason is not None:
                 gross_value = quantity * exit_price
                 exit_fee = gross_value * fee_rate
@@ -92,7 +111,37 @@ def run_backtest(
     )
 
 
-def _resolve_exit(kline: Kline, stop_price: float, take_price: float) -> Tuple[Optional[float], Optional[str]]:
+def _get_fine_for_candle(
+    kline: Kline,
+    timeframe: str,
+    fine_map: Optional[Dict[str, List[Kline]]],
+    fetch_cb: Optional[Callable[[str, str], List[Kline]]],
+) -> Optional[List[Kline]]:
+    fine = (fine_map or {}).get(kline.timestamp)
+    if fine is not None:
+        return fine
+    if fetch_cb is not None:
+        fetched = fetch_cb(kline.timestamp, timeframe)
+        if fetched:
+            if fine_map is not None:
+                fine_map[kline.timestamp] = fetched
+            return fetched
+    return None
+
+
+def _resolve_exit(
+    kline: Kline,
+    stop_price: float,
+    take_price: float,
+    fine_klines: Optional[List[Kline]] = None,
+) -> Tuple[Optional[float], Optional[str]]:
+    if fine_klines:
+        for sub in fine_klines:
+            if sub.low <= stop_price:
+                return stop_price, "stop_loss"
+            if sub.high >= take_price:
+                return take_price, "take_profit"
+        return None, None
     if kline.low <= stop_price:
         return stop_price, "stop_loss"
     if kline.high >= take_price:

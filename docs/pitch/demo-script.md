@@ -15,7 +15,7 @@ Run frontend:
 
 ```bash
 cd frontend
-python3 -m http.server 5173
+npm run dev
 ```
 
 Open:

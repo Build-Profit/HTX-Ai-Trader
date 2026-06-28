@@ -8,7 +8,7 @@ from app.services.ai_strategy_agent import generate_controller
 from app.services.backtest_engine import run_backtest as local_run_backtest
 from app.services.hb_facade import health as hb_health
 from app.services.hb_facade import run_backtest as hb_run_backtest
-from app.services.htx_market import get_klines, klines_to_dict
+from app.services.htx_market import get_klines_with_fine, klines_to_dict, make_fine_fetch_callback
 from app.services.proof_hasher import generate_proof
 from app.services.risk_explainer import explain_risk
 from app.services.simulator import simulate_trade
@@ -21,8 +21,11 @@ RUNS_DIR = ROOT_DIR / "runs"
 
 def run_demo(strategy_text: str) -> Dict[str, object]:
     strategy = parse_strategy_text(strategy_text)
-    market = get_klines(strategy.symbol, strategy.timeframe, limit=120)
+    market = get_klines_with_fine(strategy.symbol, strategy.timeframe, limit=120)
     klines = market["klines"]
+    data_source = str(market["source"])
+    fine_klines_map = market.get("fineKlines")
+    fetch_fine_cb = make_fine_fetch_callback(strategy.symbol) if data_source == "htx_live" else None
     controller = generate_controller(strategy_text, default_symbol=strategy.symbol)
 
     hb_health_state = hb_health()
@@ -38,14 +41,18 @@ def run_demo(strategy_text: str) -> Dict[str, object]:
         backtest = _backtest_dict_to_result(backtest_result, strategy)
         backtest_engine_label = "hummingbot"
     else:
-        backtest = local_run_backtest(strategy, klines, data_source=str(market["source"]))
+        backtest = local_run_backtest(
+            strategy, klines,
+            data_source=data_source,
+            fine_klines_map=fine_klines_map,
+            fetch_fine_callback=fetch_fine_cb,
+        )
         backtest_engine_label = "local"
         backtest_result = backtest.to_dict()
 
     risk = explain_risk(strategy, backtest)
 
     if hb_reachable:
-        # Do NOT auto-deploy; just signal deployability.
         logs = []
         paper_trade = {
             "deployable": True,
@@ -54,7 +61,7 @@ def run_demo(strategy_text: str) -> Dict[str, object]:
         }
         exec_engine_label = "hummingbot"
     else:
-        logs = simulate_trade(strategy, klines[:30])
+        logs = simulate_trade(strategy, klines[:30], fine_klines_map=fine_klines_map)
         paper_trade = None
         exec_engine_label = "local"
 
@@ -92,7 +99,6 @@ def run_demo(strategy_text: str) -> Dict[str, object]:
 
 
 def _backtest_dict_to_result(data: Dict[str, object], strategy: Strategy):
-    """Reconstruct a BacktestResult for risk_explainer when HB path is taken."""
     from app.models.backtest import BacktestResult, EquityPoint, Trade
 
     trades = [

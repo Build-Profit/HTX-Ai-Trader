@@ -12,6 +12,7 @@ from app.services.strategy_parser import (
     _extract_keyword_percent,
     _extract_risk_level,
     _extract_symbol,
+    _extract_timeframe,
     _normalize,
 )
 
@@ -119,6 +120,8 @@ def _rule_mapper(normalized: str, default_symbol: str) -> (ControllerConfig, Lis
     if not any(k in lowered for k in ("跌", "回调", "drop", "趋势", "bollinger", "bb", "布林")):
         warnings.append("unsupported_scenario_default_bollinger")
 
+    candles_interval = _extract_timeframe(normalized) or "1h"
+
     cfg = ControllerConfig(
         controller_type="directional_trading",
         controller_name="bollinger_v1",
@@ -134,7 +137,7 @@ def _rule_mapper(normalized: str, default_symbol: str) -> (ControllerConfig, Lis
             "order_amount_usd": capital,
             "cooldown_time": 60 * 10,
             "candles_exchange": DEFAULT_EXCHANGE,
-            "candles_interval": "1h",
+            "candles_interval": candles_interval,
             "bb_length": 20,
             "bb_std": 2.0,
             "bb_long_threshold": 0.0,

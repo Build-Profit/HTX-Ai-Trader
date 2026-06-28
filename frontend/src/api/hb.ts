@@ -11,7 +11,7 @@ export class HbApiError extends Error {
   }
 }
 
-const PROXY_PREFIX = "/hbapi";
+const PROXY_PREFIX = import.meta.env.VITE_HB_PROXY_PREFIX || "/hbapi";
 const MAX_DEBUG = 30;
 
 let debugLog: HbDebugEntry[] = [];

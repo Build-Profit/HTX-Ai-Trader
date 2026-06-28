@@ -1,5 +1,14 @@
 """Central config: read env vars at call time so tests can monkeypatch."""
 import os
+from pathlib import Path
+
+from dotenv import load_dotenv
+
+_dotenv_path = Path(__file__).resolve().parent.parent.parent / ".env"
+if _dotenv_path.exists():
+    load_dotenv(_dotenv_path)
+else:
+    load_dotenv()
 
 
 def _str(name: str, default: str) -> str:

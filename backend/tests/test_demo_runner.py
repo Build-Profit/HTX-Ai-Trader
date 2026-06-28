@@ -12,7 +12,7 @@ class DemoRunnerTest(unittest.TestCase):
         self.assertIn("risk", result)
         self.assertIn("executionLogs", result)
         self.assertIn("proof", result)
-        self.assertEqual(result["market"]["source"], "local_sample")
+        self.assertIn(result["market"]["source"], {"local_sample", "htx_cached", "htx_live"})
 
 
 if __name__ == "__main__":

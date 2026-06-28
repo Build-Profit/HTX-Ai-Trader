@@ -81,11 +81,12 @@ def test_run_backtest_uses_hummingbot_when_reachable(monkeypatch):
 def test_run_backtest_falls_back_to_local_when_unreachable(monkeypatch):
     fake = _FakeClient(reachable=False)
     monkeypatch.setattr(hb_facade, "_client", lambda: fake)
-    monkeypatch.setattr(hb_facade, "local_get_klines",
+    monkeypatch.setattr(hb_facade, "get_klines_with_fine",
                        lambda symbol, timeframe, limit: {
                            "source": "local_sample",
                            "metadata": {},
                            "klines": load_sample_klines(symbol, timeframe, limit),
+                           "fineKlines": None,
                        })
 
     result = hb_facade.run_backtest(_make_controller(), limit=120)

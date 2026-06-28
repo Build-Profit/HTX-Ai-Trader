@@ -35,14 +35,11 @@ cd backend
 python3 -m pytest
 ```
 
-Frontend syntax:
+Frontend TypeScript check:
 
 ```bash
-node --check frontend/src/app.js
-node --check frontend/src/api.js
-node --check frontend/src/charts.js
-node --check frontend/src/demo.js
-node --check frontend/src/ui-state.js
+cd frontend
+npx tsc --noEmit
 ```
 
 Full local demo:
@@ -54,7 +51,7 @@ python3 -m uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
 
 ```bash
 cd frontend
-python3 -m http.server 5173
+npm run dev
 ```
 
 Open `http://127.0.0.1:5173`.

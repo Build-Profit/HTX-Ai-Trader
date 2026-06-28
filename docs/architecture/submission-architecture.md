@@ -20,18 +20,20 @@ The current MVP optimizes for reproducibility and demo stability. Core behavior 
 
 Location: `frontend/`
 
+Technology: React 18 + TypeScript SPA built with Vite.
+
 Responsibilities:
 
 - Capture strategy prompt.
-- Call backend demo API.
+- Run strategy parsing, backtesting, risk, and proof client-side (mirrors backend logic).
+- Optionally call backend demo API or Hummingbot API.
 - Render strategy JSON.
 - Render backtest metrics and equity curve.
 - Render risk explanation.
 - Render simulated orders.
 - Render proof hashes.
+- Hummingbot controller config and bot management panels.
 - Show sample fallback data on first load.
-
-The frontend uses plain HTML, CSS, and browser ES modules. It does not require a build step.
 
 ### FastAPI Backend
 

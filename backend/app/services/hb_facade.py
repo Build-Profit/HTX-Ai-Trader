@@ -12,6 +12,7 @@ from app.models.strategy import EntryRule, ExitRule, RiskRule, Strategy
 from app.services import config
 from app.services.backtest_engine import run_backtest as local_run_backtest
 from app.services.htx_market import get_klines as local_get_klines
+from app.services.htx_market import get_klines_with_fine, make_fine_fetch_callback
 from app.services.hummingbot_client import HummingbotClient, HummingbotError, get_client
 
 
@@ -156,18 +157,28 @@ def run_backtest(
         except (HummingbotError, Exception):
             pass
 
-    # Local fallback.
+    # Local fallback with fine-grained sub-candle resolution.
     cfg = controller_cfg.get("config") if isinstance(controller_cfg, dict) else None
     if not isinstance(cfg, dict):
         cfg = {}
     strategy = _controller_to_strategy(controller_cfg)
     if klines is None:
-        market = local_get_klines(strategy.symbol, strategy.timeframe, limit)
+        market = get_klines_with_fine(strategy.symbol, strategy.timeframe, limit)
         klines = market["klines"]
-        data_source = market["source"]
+        data_source = str(market["source"])
+        fine_klines_map = market.get("fineKlines")
+        fetch_fine_cb = make_fine_fetch_callback(strategy.symbol) if data_source == "htx_live" else None
     else:
         data_source = "request_payload"
-    result = local_run_backtest(strategy, klines, data_source=data_source, fee_rate=fee_rate)
+        fine_klines_map = None
+        fetch_fine_cb = None
+    result = local_run_backtest(
+        strategy, klines,
+        data_source=data_source,
+        fee_rate=fee_rate,
+        fine_klines_map=fine_klines_map,
+        fetch_fine_callback=fetch_fine_cb,
+    )
     out = result.to_dict()
     out["engine"] = "local"
     return out

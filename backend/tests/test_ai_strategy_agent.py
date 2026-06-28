@@ -6,6 +6,13 @@ import pytest
 from app.services import ai_strategy_agent
 
 
+_openai_available = True
+try:
+    import openai  # noqa: F401
+except ImportError:
+    _openai_available = False
+
+
 @pytest.fixture(autouse=True)
 def _disable_llm(monkeypatch):
     monkeypatch.setenv("LLM_ENABLED", "false")
@@ -54,6 +61,7 @@ def test_rule_mapper_default_bollinger_with_warnings():
     assert "unsupported_scenario_default_bollinger" in result["warnings"]
 
 
+@pytest.mark.skipif(not _openai_available, reason="openai package not installed")
 def test_llm_channel_used_when_configured(monkeypatch):
     monkeypatch.setenv("LLM_ENABLED", "true")
     monkeypatch.setenv("OPENAI_API_KEY", "sk-test")
@@ -99,6 +107,7 @@ def test_llm_channel_used_when_configured(monkeypatch):
     assert result["config"]["trading_pair"] == "BTC-USDT"
 
 
+@pytest.mark.skipif(not _openai_available, reason="openai package not installed")
 def test_llm_failure_falls_back_to_rules_with_warning(monkeypatch):
     monkeypatch.setenv("LLM_ENABLED", "true")
     monkeypatch.setenv("OPENAI_API_KEY", "sk-test")
