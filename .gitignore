@@ -20,3 +20,4 @@ runs/*
 backend/app/data/cache/
 .trae/
 .vscode/
+*.env

@@ -14,14 +14,17 @@ export function useHbHealth(): HbHealthState {
   const [checking, setChecking] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const [engine, setEngine] = useState<string>("local");
   const probe = useCallback(async () => {
     setChecking(true);
     setError(null);
     try {
-      await checkHbHealth();
-      setReachable(true);
+      const info = await checkHbHealth();
+      setReachable(info.reachable);
+      setEngine(info.engine);
     } catch (err) {
       setReachable(false);
+      setEngine("local");
       setError(err instanceof Error ? err.message : String(err));
     } finally {
       setChecking(false);
@@ -36,7 +39,7 @@ export function useHbHealth(): HbHealthState {
 
   return {
     reachable,
-    engine: reachable ? "hummingbot" : "local",
+    engine,
     checking,
     error,
     refresh: () => void probe(),

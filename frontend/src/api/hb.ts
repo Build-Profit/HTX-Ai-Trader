@@ -44,8 +44,8 @@ export function clearDebug(): void {
 
 export function loadHbAuth(): HbAuthSettings {
   return {
-    user: localStorage.getItem("profitprince.hb.user") || "admin",
-    password: localStorage.getItem("profitprince.hb.password") || "admin",
+    user: localStorage.getItem("profitprince.hb.user") || import.meta.env.VITE_HB_API_USER || "htxbot",
+    password: localStorage.getItem("profitprince.hb.password") || import.meta.env.VITE_HB_API_PASSWORD || "hummingbot",
   };
 }
 
@@ -58,6 +58,7 @@ async function fetchHb<T = unknown>(
   method: string,
   path: string,
   body?: unknown,
+  timeoutMs?: number,
 ): Promise<T> {
   const auth = loadHbAuth();
   const cred = btoa(`${auth.user}:${auth.password}`);
@@ -69,6 +70,7 @@ async function fetchHb<T = unknown>(
       ...(body !== undefined ? { "Content-Type": "application/json" } : {}),
     },
     ...(body !== undefined ? { body: JSON.stringify(body) } : {}),
+    ...(timeoutMs ? { signal: AbortSignal.timeout(timeoutMs) } : {}),
   };
 
   let status: number | string = 0;
@@ -87,8 +89,13 @@ async function fetchHb<T = unknown>(
       responseParsed = text;
     }
     if (!response.ok) {
-      errorMsg = `HTTP ${response.status}`;
-      throw new HbApiError(`HB ${method} ${path} -> ${response.status}`, response.status, responseParsed);
+      const detail =
+        responseParsed && typeof responseParsed === "object" &&
+        "detail" in (responseParsed as Record<string, unknown>)
+          ? String((responseParsed as Record<string, unknown>).detail)
+          : `HTTP ${response.status}`;
+      errorMsg = detail;
+      throw new HbApiError(`HB ${method} ${path} -> ${response.status}: ${detail}`, response.status, responseParsed);
     }
     return responseParsed as T;
   } catch (err) {
@@ -111,29 +118,71 @@ async function fetchHb<T = unknown>(
   }
 }
 
-export async function checkHbHealth(): Promise<{ reachable: boolean; raw: unknown }> {
-  const raw = await fetchHb<unknown>("GET", "/bot-orchestration/status");
-  return { reachable: true, raw };
+export interface HbHealthInfo {
+  reachable: boolean;
+  engine: string;
+  raw: unknown;
 }
 
-export async function listConnectors(): Promise<string[]> {
-  const data = await fetchHb<string[]>("GET", "/connectors/");
-  return Array.isArray(data) ? data : [];
-}
-
-export async function listControllers(): Promise<Record<string, string[]>> {
-  return fetchHb<Record<string, string[]>>("GET", "/controllers/");
+export async function checkHbHealth(): Promise<HbHealthInfo> {
+  const raw = await fetchHb<unknown>("GET", "/bot-orchestration/status", undefined, 8000);
+  return { reachable: true, engine: "hummingbot", raw };
 }
 
 export async function fetchCandles(
-  connectorName: string,
+  _connectorName: string,
   tradingPair: string,
   interval = "1h",
   maxRecords = 120,
-): Promise<Kline[]> {
-  const body = { connector_name: connectorName, trading_pair: tradingPair, interval, max_records: maxRecords };
-  const data = await fetchHb<unknown>("POST", "/market-data/candles", body);
-  return mapCandles(data);
+): Promise<{ klines: Kline[]; source: string }> {
+  // ProfitPrince /api/market/klines expects "BTC/USDT" (slash);
+  // ruleMapper outputs "BTC-USDT" (dash) — normalize here.
+  const symbol = tradingPair.replace("-", "/");
+  const path = "/api/market/klines";
+  const url = `${path}?symbol=${encodeURIComponent(symbol)}&timeframe=${encodeURIComponent(interval)}&limit=${maxRecords}`;
+
+  let status: number | string = 0;
+  let ok = false;
+  let responseParsed: unknown = undefined;
+  let errorMsg: string | undefined;
+
+  try {
+    const response = await fetch(url, { signal: AbortSignal.timeout(15000) });
+    status = response.status;
+    ok = response.ok;
+    const text = await response.text();
+    try {
+      responseParsed = text ? JSON.parse(text) : undefined;
+    } catch {
+      responseParsed = text;
+    }
+    if (!response.ok) {
+      errorMsg = `HTTP ${response.status}`;
+      throw new Error(errorMsg);
+    }
+    const data = responseParsed as { source?: string } | undefined;
+    const klines = mapCandles(data);
+    if (klines.length >= 2) {
+      return { klines, source: String(data?.source ?? "htx_live") };
+    }
+    return { klines: [], source: "hummingbot" };
+  } catch (err) {
+    if (!errorMsg) {
+      errorMsg = err instanceof Error ? err.message : String(err);
+      status = status || "ERR";
+    }
+    return { klines: [], source: "hummingbot" };
+  } finally {
+    pushDebug({
+      method: "GET",
+      path,
+      status,
+      ok,
+      request: { symbol, timeframe: interval, limit: maxRecords },
+      response: responseParsed,
+      error: errorMsg,
+    });
+  }
 }
 
 function mapCandles(data: unknown): Kline[] {
@@ -195,7 +244,7 @@ function normalizeTimestamp(value: unknown): string {
 }
 
 export async function runHbBacktest(controllerConfig: unknown): Promise<unknown> {
-  return fetchHb<unknown>("POST", "/backtesting/run", { controller_config: controllerConfig });
+  return fetchHb<unknown>("POST", "/backtesting/run", { controller_config: controllerConfig }, 30000);
 }
 
 export async function deployBot(

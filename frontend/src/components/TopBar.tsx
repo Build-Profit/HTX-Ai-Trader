@@ -28,7 +28,7 @@ export function TopBar({ hbHealth, llmSettings, hbAuth, onLlmSave, onHbAuthSave 
         <h1>ProfitPrince Strategy Console</h1>
       </div>
       <div className="connection-panel">
-        <span className="pill-label">Hummingbot API (localhost:8000)</span>
+        <span className="pill-label">Hummingbot API ({import.meta.env.VITE_HB_API_TARGET || "http://localhost:8000"})</span>
         <span className={statusClassName(hbTone)}>{hbText}</span>
         <button
           className="icon-button"

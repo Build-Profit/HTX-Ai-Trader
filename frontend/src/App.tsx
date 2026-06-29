@@ -63,15 +63,16 @@ export default function App() {
       }
 
       const cfg = controller.config as Record<string, unknown>;
-      const exchange = String(cfg.exchange ?? "binance");
+      const exchange = String(cfg.exchange ?? cfg.candles_exchange ?? "binance");
       const tradingPair = String(cfg.trading_pair ?? strategy.symbol.replace("/", "-"));
       const interval = String(cfg.candles_interval ?? strategy.timeframe);
 
       let klines: Kline[] = [];
       let dataSource = "local_sample";
       try {
-        klines = await fetchCandles(exchange, tradingPair, interval, 120);
-        if (klines.length >= 2) dataSource = "hummingbot";
+        const fetched = await fetchCandles(exchange, tradingPair, interval, 120);
+        klines = fetched.klines;
+        if (klines.length >= 2) dataSource = fetched.source;
         else klines = [];
       } catch {
         klines = [];
@@ -208,7 +209,7 @@ export default function App() {
             <ProofPanel proof={proof} />
           </div>
           <OrdersTable logs={executionLogs} />
-          <HbControllerPanel controller={controller} />
+          <HbControllerPanel controller={controller} hbReachable={hbHealth.reachable} />
           <HbBotPanel bot={bot} controller={controller} hbReachable={hbHealth.reachable} />
           <HbApiDebugPanel />
         </div>

@@ -777,6 +777,31 @@ tbody tr:last-child td {
   line-height: 1.4;
 }
 
+.hb-backtest-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.hb-backtest-result {
+  margin-top: 10px;
+  padding: 10px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+
+.hb-backtest-result pre {
+  margin: 0;
+  max-height: 240px;
+  overflow: auto;
+  font-size: 11px;
+  color: var(--muted);
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
 .legend {
   display: flex;
   flex-wrap: wrap;
